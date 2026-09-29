@@ -8,7 +8,7 @@ from scipy.optimize import minimize
 # 針對手機版最佳化版面
 st.set_page_config(page_title="我的資產配置組合試算", layout="centered", page_icon="🧭")
 
-st.title("🧭 我的投資性格與黃金配比")
+st.title("🧭 我的資產配置組合試算")
 st.write("請輸入感興趣的股票或 ETF！")
 # ==================== 頁面最上方：免責聲明與風險提醒 ====================
 st.warning(
