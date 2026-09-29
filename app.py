@@ -168,6 +168,10 @@ with st.expander("📚 查看技術附錄：資料來源、統計方法與程式
     with tab_model:
         st.markdown(r"""
         #### 📐 現代投資組合理論 (MPT) 與參數估算
+        #### 📐 理論基礎與數學模型 (Theoretical Foundation)
+本系統之核心最佳化演算法基於諾貝爾經濟學獎得主之經典財務理論：
+* **哈利·馬可維茲 (Harry Markowitz, 1952)** 之「現代投資組合理論 (Modern Portfolio Theory, MPT)」：透過資產間的共變異數分析，在承擔相同風險下追求報酬極大化，或在目標報酬下使波動度極小化。
+* **威廉·夏普 (William Sharpe, 1964)** 之「切線投資組合與夏普值 (Tangency Portfolio & Sharpe Ratio)」：納入無風險資產（Risk-free Rate），追求每承擔一單位總波動度所能換取的最高超額回報。
         * **日收益率計算**：
           採用離散百分比報酬率：
           $$R_t = \frac{P_t - P_{t-1}}{P_{t-1}}$$
