@@ -134,3 +134,65 @@ for name, w in zip(data.columns, best_weights):
         weights_data.append({"標的名稱": name, "配置比例": f"{(y * w) * 100:.2f} %"})
 
 st.dataframe(pd.DataFrame(weights_data), use_container_width=True, hide_index=True)
+
+# ==================== 頁面最下方：技術與方法論附錄 ====================
+st.markdown("---")
+
+with st.expander("📚 查看技術附錄：資料來源、統計方法與程式架構說明", expanded=False):
+    st.markdown("### 🛠️ 專案技術與方法論說明 (Methodology & Appendix)")
+
+    tab_data, tab_model, tab_code = st.tabs(["1. 資料來源與處理", "2. 財務模型與計算", "3. 核心程式碼架構"])
+
+    # ---------------- 頁籤 1：資料來源與處理 ----------------
+    with tab_data:
+        st.markdown("""
+        #### 📌 資料來源與取樣設計
+        * **資料來源**：透過開源套件 `yfinance` 串接 **Yahoo Finance** API 下載歷史交易行情。
+        * **代碼自動解析**：
+          * 支援輸入純數字代碼（例如 `0050`、`2330`），系統會自動後綴 `.TW` 轉換為台灣市場格式。
+          * 支援輸入美股英文代碼（例如 `VOO`、`QQQ`、`NVDA`）。
+        * **回溯歷史期間 (Lookback Period)**：
+          * 採用 **過去 3 年（`period='3y'`）** 之歷史日頻率交易數據（約 750 個交易日）。
+          * *選擇理由*：3 年歷史數據能有效反映近期市場的結構與各標的波動特徵，避免過於久遠的資料失真，同時具備足夠的樣本點以穩定估計共變異數矩陣。
+        * **價格欄位**：採用每日 **收盤價（Close）**。
+        * **缺漏值處理**：跨市場休市日不一致時，使用 `dropna()` 剔除未對齊的日期，確保時間序列資料完整一致。
+        """)
+
+    # ---------------- 頁籤 2：財務模型與計算 ----------------
+    with tab_model:
+        st.markdown(r"""
+        #### 📐 現代投資組合理論 (MPT) 與參數估算
+        * **日收益率計算**：
+          採用離散百分比報酬率：
+          $$R_t = \frac{P_t - P_{t-1}}{P_{t-1}}$$
+        * **參數年化方式 (Annualization)**：
+          以一年 252 個交易日進行折算：
+          * **年化預期報酬率**：$\mu = \bar{R}_{\text{daily}} \times 252$
+          * **年化共變異數矩陣**：$\boldsymbol{\Sigma} = \boldsymbol{\Sigma}_{\text{daily}} \times 252$
+        * **投資組合風險指標**：
+          * **組合年化波動度 (標準差)**：$\sigma_p = \sqrt{\mathbf{w}^T \boldsymbol{\Sigma} \mathbf{w}}$
+          * **夏普值 (Sharpe Ratio)**：$\text{SR} = \frac{E(R_p) - R_f}{\sigma_p}$（衡量承擔每單位總風險所獲得的超額回報）
+        * **分散風險核心依據**：
+          * 當納入新標的 $E$ 時，若 $\text{Cov}(R_E, R_p) < \sigma_p^2$，該標的就能在邊際上壓低投資組合總波動度，實現資產配置的分散效果。
+        """)
+
+    # ---------------- 頁籤 3：核心程式碼架構 ----------------
+    with tab_code:
+        st.markdown("""
+        #### 💻 核心資料抓取與矩陣運算片段
+        ```python
+        import yfinance as yf
+
+        # 1. 代碼解析與 3 年歷史收盤價下載
+        tickers = {t: f"{t}.TW" if t.isdigit() else t for t in unique_tokens}
+        raw_prices = yf.download(list(tickers.values()), period='3y')['Close']
+        data = raw_prices.dropna().rename(columns={v: k for k, v in tickers.items()})
+
+        # 2. 計算日報酬率並做年化參數估算 (252 個交易日)
+        returns = data.pct_change().dropna()
+        mean_returns = returns.mean() * 252
+        cov_matrix = returns.cov() * 252
+        ```
+        """)
+
+    st.caption("© 投資組合簡易指南 (Portfolio Easy Guide) · 基於現代投資組合理論 (Markowitz MPT) 設計")
