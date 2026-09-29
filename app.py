@@ -6,10 +6,16 @@ import plotly.graph_objects as go
 from scipy.optimize import minimize
 
 # 針對手機版最佳化版面
-st.set_page_config(page_title="資產配置探索儀", layout="centered", page_icon="🧭")
+st.set_page_config(page_title="我的資產配置組合試算", layout="centered", page_icon="🧭")
 
-st.title("🧭 你的投資性格與黃金配比")
-st.write("輸入你感興趣的股票或 ETF，探索你的資產配置切點組合！")
+st.title("🧭 我的投資性格與黃金配比")
+st.write("輸入感興趣的股票或 ETF！")
+# ==================== 頁面最上方：免責聲明與風險提醒 ====================
+st.warning(
+    "⚠️ **【投資免責聲明與風險提示】**\n\n"
+    "本工具與模擬模型僅供個人輔助參考，**不構成任何形式之投資建議、推薦或要約**。"
+    "歷史回測數據與統計估計不代表未來績效保證，金融市場投資具備本金虧損風險，投資人應獨立審慎評估並自負投資風險。"
+)
 
 # 1. 標的輸入區（預設給幾檔常見標的）
 default_tickers = "0050, 2330, VOO, BND"
@@ -21,7 +27,7 @@ user_input = st.text_input(
 
 # 2. 投資性格滑桿（互動機制）
 risk_tolerance = st.slider(
-    "🎯 調整你的攻擊偏好（投入切點組合的比例 %）：",
+    "🎯 調整風險偏好（投入切點組合的比例 %）：",
     min_value=0, max_value=100, value=70, step=5
 )
 
@@ -127,7 +133,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 # 6. 配置配方清單
-st.subheader("📋 你的專屬資金分配比率")
+st.subheader("📋 我的專屬資金分配比率")
 weights_data = [{"標的名稱": "無風險公債 / 定存", "配置比例": f"{(1 - y) * 100:.2f} %"}]
 for name, w in zip(data.columns, best_weights):
     if (y * w) >= 0.0001:
